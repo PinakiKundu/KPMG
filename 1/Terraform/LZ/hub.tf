@@ -1,31 +1,22 @@
-module "naming" {
-  source = "Azure/naming/azurerm"
-  suffix = ["pk-assemnt"]
-}
-
-locals {
-  location = "West Europe"
-}
-
-resource "azurerm_resource_group" "group" {
-  name     = module.naming.resource_group
+resource "azurerm_resource_group" "hub" {
+  name     = "${module.naming.resource_group}-hub"
   location = local.location
 }
 
 # Network configuration ##
 #------------------------#
-resource "azurerm_virtual_network" "network" {
-  name                = "${module.naming.virtual_network}-spoke"
+resource "azurerm_virtual_network" "hub" {
+  name                = "${module.naming.virtual_network}-hub"
   location            = local.location
-  resource_group_name = azurerm_resource_group.group.name
+  resource_group_name = azurerm_resource_group.hub.name
   address_space       = ["10.10.0.0/16"]
 }
 
 # Subnet for AGW deployment #
 resource "azurerm_subnet" "gateway_subnet" {
   name                 = module.naming.subnet
-  resource_group_name  = azurerm_virtual_network.network.resource_group_name
-  virtual_network_name = azurerm_virtual_network.network.name
+  resource_group_name  = azurerm_virtual_network.hub.resource_group_name
+  virtual_network_name = azurerm_virtual_network.hub.name
   address_prefixes     = ["10.10.1.0/24"]
   service_endpoints    = ["Microsoft.KeyVault"]
 }
@@ -36,7 +27,7 @@ resource "azurerm_subnet" "gateway_subnet" {
 resource "azurerm_network_security_group" "gateway_subnet_nsg" {
   name                = module.naming.network_security_group
   location            = local.location
-  resource_group_name = azurerm_resource_group.group.name
+  resource_group_name = azurerm_resource_group.hub.name
 
   security_rule {
     name                       = "agw-network-security-rule-healthcheck"

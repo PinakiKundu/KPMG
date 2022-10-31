@@ -3,7 +3,7 @@
 module "appgateway" {
   source = "../modules/agw"
 
-  resource_group_name = azurerm_resource_group.group.name
+  resource_group_name = azurerm_resource_group.hub.name
   location            = local.location
   agw_subnet_id       = azurerm_subnet.gateway_subnet.id
 
@@ -11,7 +11,7 @@ module "appgateway" {
   backend_address_pools = [
     {
       "name" = "pool-dev"
-      //"ip_addresses" = [module.certified_vm.private_ip]
+      "ip_addresses" = [module.win_vm.private_ip]
     }
   ]
 
@@ -31,8 +31,6 @@ module "appgateway" {
       "request_timeout" = 100
     }
   ]
-
-
 }
 #--------------------#
 # End of AGW module #
