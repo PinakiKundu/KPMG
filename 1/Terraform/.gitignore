@@ -1,0 +1,32 @@
+#  Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# .tfvars files
+*.tfvars
+
+# .backup files
+*.backup
+
+# local files
+*.local.*
+!*.local.sample.*
+
+#tf lock files
+*.lock.hcl
+
+# tf plan files
+*.tfplan
+
+.test-data
+
+*.test
+
+*.txt
+
+.idea
+
+*.out

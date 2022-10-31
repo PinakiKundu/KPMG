@@ -10,7 +10,7 @@ module "appgateway" {
 
   backend_address_pools = [
     {
-      "name" = "pool-dev"
+      "name"         = "pool-dev"
       "ip_addresses" = [module.win_vm.private_ip]
     }
   ]
