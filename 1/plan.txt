@@ -1,0 +1,529 @@
+terraform plan -out plan.out
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # azurerm_network_security_group.gateway_subnet_nsg will be created
+  + resource "azurerm_network_security_group" "gateway_subnet_nsg" {
+      + id                  = (known after apply)
+      + location            = "westeurope"
+      + name                = "nsg-pk-assemnt"
+      + resource_group_name = "rg-pk-assemnt-hub"
+      + security_rule       = [
+          + {
+              + access                                     = "Allow"
+              + description                                = ""
+              + destination_address_prefix                 = "*"
+              + destination_address_prefixes               = []
+              + destination_application_security_group_ids = []
+              + destination_port_range                     = "65200-65535"
+              + destination_port_ranges                    = []
+              + direction                                  = "Inbound"
+              + name                                       = "agw-network-security-rule-healthcheck"
+              + priority                                   = 101
+              + protocol                                   = "Tcp"
+              + source_address_prefix                      = "GatewayManager"
+              + source_address_prefixes                    = []
+              + source_application_security_group_ids      = []
+              + source_port_range                          = "*"
+              + source_port_ranges                         = []
+            },
+        ]
+    }
+
+  # azurerm_resource_group.hub will be created
+  + resource "azurerm_resource_group" "hub" {
+      + id       = (known after apply)
+      + location = "westeurope"
+      + name     = "rg-pk-assemnt-hub"
+    }
+
+  # azurerm_resource_group.resource will be created
+  + resource "azurerm_resource_group" "resource" {
+      + id       = (known after apply)
+      + location = "westeurope"
+      + name     = "rg-pk-assemnt"
+    }
+
+  # azurerm_subnet.gateway_subnet will be created
+  + resource "azurerm_subnet" "gateway_subnet" {
+      + address_prefixes                               = [
+          + "10.10.1.0/24",
+        ]
+      + enforce_private_link_endpoint_network_policies = (known after apply)
+      + enforce_private_link_service_network_policies  = (known after apply)
+      + id                                             = (known after apply)
+      + name                                           = "snet-pk-assemnt"
+      + private_endpoint_network_policies_enabled      = (known after apply)
+      + private_link_service_network_policies_enabled  = (known after apply)
+      + resource_group_name                            = "rg-pk-assemnt-hub"
+      + service_endpoints                              = [
+          + "Microsoft.KeyVault",
+        ]
+      + virtual_network_name                           = "vnet-pk-assemnt-hub"
+    }
+
+  # azurerm_subnet.resource_subnet will be created
+  + resource "azurerm_subnet" "resource_subnet" {
+      + address_prefixes                               = [
+          + "10.10.1.0/24",
+        ]
+      + enforce_private_link_endpoint_network_policies = (known after apply)
+      + enforce_private_link_service_network_policies  = (known after apply)
+      + id                                             = (known after apply)
+      + name                                           = "snet-pk-assemnt"
+      + private_endpoint_network_policies_enabled      = (known after apply)
+      + private_link_service_network_policies_enabled  = (known after apply)
+      + resource_group_name                            = "rg-pk-assemnt-hub"
+      + service_endpoints                              = [
+          + "Microsoft.KeyVault",
+        ]
+      + virtual_network_name                           = "vnet-pk-assemnt-spoke"
+    }
+
+  # azurerm_subnet_network_security_group_association.gateway_subnet_nsg_association will be created
+  + resource "azurerm_subnet_network_security_group_association" "gateway_subnet_nsg_association" {
+      + id                        = (known after apply)
+      + network_security_group_id = (known after apply)
+      + subnet_id                 = (known after apply)
+    }
+
+  # azurerm_virtual_machine_extension.vm_extension_install_iis will be created
+  + resource "azurerm_virtual_machine_extension" "vm_extension_install_iis" {
+      + auto_upgrade_minor_version  = true
+      + failure_suppression_enabled = false
+      + id                          = (known after apply)
+      + name                        = "vm_extension_install_iis"
+      + publisher                   = "Microsoft.Compute"
+      + settings                    = jsonencode(
+            {
+              + commandToExecute = "powershell -ExecutionPolicy Unrestricted Install-WindowsFeature -Name Web-Server -IncludeAllSubFeature -IncludeManagementTools"
+            }
+        )
+      + type                        = "CustomScriptExtension"
+      + type_handler_version        = "1.8"
+      + virtual_machine_id          = (known after apply)
+    }
+
+  # azurerm_virtual_network.hub will be created
+  + resource "azurerm_virtual_network" "hub" {
+      + address_space       = [
+          + "10.10.0.0/16",
+        ]
+      + dns_servers         = (known after apply)
+      + guid                = (known after apply)
+      + id                  = (known after apply)
+      + location            = "westeurope"
+      + name                = "vnet-pk-assemnt-hub"
+      + resource_group_name = "rg-pk-assemnt-hub"
+      + subnet              = (known after apply)
+    }
+
+  # azurerm_virtual_network.spoke will be created
+  + resource "azurerm_virtual_network" "spoke" {
+      + address_space       = [
+          + "10.10.0.0/16",
+        ]
+      + dns_servers         = (known after apply)
+      + guid                = (known after apply)
+      + id                  = (known after apply)
+      + location            = "westeurope"
+      + name                = "vnet-pk-assemnt-spoke"
+      + resource_group_name = "rg-pk-assemnt-hub"
+      + subnet              = (known after apply)
+    }
+
+  # azurerm_virtual_network_peering.example-1 will be created
+  + resource "azurerm_virtual_network_peering" "example-1" {
+      + allow_forwarded_traffic      = true
+      + allow_gateway_transit        = false
+      + allow_virtual_network_access = true
+      + id                           = (known after apply)
+      + name                         = "peer1to2"
+      + remote_virtual_network_id    = (known after apply)
+      + resource_group_name          = "rg-pk-assemnt-hub"
+      + use_remote_gateways          = (known after apply)
+      + virtual_network_name         = "vnet-pk-assemnt-hub"
+    }
+
+  # module.appgateway.azurerm_application_gateway.agw will be created
+  + resource "azurerm_application_gateway" "agw" {
+      + enable_http2                = true
+      + id                          = (known after apply)
+      + location                    = "westeurope"
+      + name                        = "agw-pk-assemnt"
+      + private_endpoint_connection = (known after apply)
+      + resource_group_name         = "rg-pk-assemnt-hub"
+
+      + backend_address_pool {
+          + fqdns        = []
+          + id           = (known after apply)
+          + ip_addresses = (known after apply)
+          + name         = "pool-dev"
+        }
+
+      + backend_http_settings {
+          + cookie_based_affinity               = "Disabled"
+          + id                                  = (known after apply)
+          + name                                = "dev-http-settings"
+          + pick_host_name_from_backend_address = false
+          + port                                = 80
+          + probe_id                            = (known after apply)
+          + protocol                            = "Http"
+          + request_timeout                     = 100
+          + trusted_root_certificate_names      = []
+        }
+
+      + frontend_ip_configuration {
+          + id                            = (known after apply)
+          + name                          = "agw-fend-public-ip-config"
+          + private_ip_address            = (known after apply)
+          + private_ip_address_allocation = "Dynamic"
+          + private_link_configuration_id = (known after apply)
+          + public_ip_address_id          = (known after apply)
+        }
+
+      + frontend_port {
+          + id   = (known after apply)
+          + name = "agw-fend-port"
+          + port = 80
+        }
+
+      + gateway_ip_configuration {
+          + id        = (known after apply)
+          + name      = "agw-ip-config"
+          + subnet_id = (known after apply)
+        }
+
+      + http_listener {
+          + frontend_ip_configuration_id   = (known after apply)
+          + frontend_ip_configuration_name = "agw-fend-ip-config"
+          + frontend_port_id               = (known after apply)
+          + frontend_port_name             = "agw-fend-port"
+          + host_names                     = []
+          + id                             = (known after apply)
+          + name                           = "agw-http-listener"
+          + protocol                       = "Http"
+          + ssl_certificate_id             = (known after apply)
+          + ssl_profile_id                 = (known after apply)
+        }
+
+      + request_routing_rule {
+          + backend_address_pool_id    = (known after apply)
+          + backend_address_pool_name  = "pool-dev"
+          + backend_http_settings_id   = (known after apply)
+          + backend_http_settings_name = "dev-http-settings"
+          + http_listener_id           = (known after apply)
+          + http_listener_name         = "agw-http-listener"
+          + id                         = (known after apply)
+          + name                       = "dev-routing"
+          + priority                   = 1
+          + redirect_configuration_id  = (known after apply)
+          + rewrite_rule_set_id        = (known after apply)
+          + rule_type                  = "Basic"
+          + url_path_map_id            = (known after apply)
+        }
+
+      + sku {
+          + capacity = 2
+          + name     = "Standard_v2"
+          + tier     = "Standard"
+        }
+
+      + ssl_policy {
+          + cipher_suites        = (known after apply)
+          + disabled_protocols   = (known after apply)
+          + min_protocol_version = (known after apply)
+          + policy_name          = (known after apply)
+          + policy_type          = (known after apply)
+        }
+    }
+
+  # module.appgateway.azurerm_public_ip.ip will be created
+  + resource "azurerm_public_ip" "ip" {
+      + allocation_method       = "Static"
+      + fqdn                    = (known after apply)
+      + id                      = (known after apply)
+      + idle_timeout_in_minutes = 4
+      + ip_address              = (known after apply)
+      + ip_version              = "IPv4"
+      + location                = "westeurope"
+      + name                    = "pip-pk-assemnt"
+      + resource_group_name     = "rg-pk-assemnt-hub"
+      + sku                     = "Basic"
+      + sku_tier                = "Regional"
+    }
+
+  # module.naming.random_string.first_letter will be created
+  + resource "random_string" "first_letter" {
+      + id          = (known after apply)
+      + length      = 1
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = false
+      + numeric     = false
+      + result      = (known after apply)
+      + special     = false
+      + upper       = false
+    }
+
+  # module.naming.random_string.main will be created
+  + resource "random_string" "main" {
+      + id          = (known after apply)
+      + length      = 60
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = true
+      + numeric     = true
+      + result      = (known after apply)
+      + special     = false
+      + upper       = false
+    }
+
+  # module.psql.azurerm_postgresql_server.psql will be created
+  + resource "azurerm_postgresql_server" "psql" {
+      + administrator_login              = "adminuser"
+      + administrator_login_password     = (sensitive value)
+      + auto_grow_enabled                = true
+      + backup_retention_days            = 7
+      + create_mode                      = "Default"
+      + fqdn                             = (known after apply)
+      + geo_redundant_backup_enabled     = true
+      + id                               = (known after apply)
+      + location                         = "westeurope"
+      + name                             = "psql-pk-assemnt"
+      + public_network_access_enabled    = false
+      + resource_group_name              = "rg-pk-assemnt"
+      + sku_name                         = "GP_Gen5_2"
+      + ssl_enforcement_enabled          = true
+      + ssl_minimal_tls_version_enforced = "TLS1_2"
+      + storage_mb                       = 51200
+      + version                          = "11"
+
+      + identity {
+          + principal_id = (known after apply)
+          + tenant_id    = (known after apply)
+          + type         = "SystemAssigned"
+        }
+    }
+
+  # module.psql.azurerm_private_endpoint.private_endpoint will be created
+  + resource "azurerm_private_endpoint" "private_endpoint" {
+      + custom_dns_configs       = (known after apply)
+      + id                       = (known after apply)
+      + location                 = "westeurope"
+      + name                     = "pe-pk-assemnt"
+      + network_interface        = (known after apply)
+      + private_dns_zone_configs = (known after apply)
+      + resource_group_name      = "rg-pk-assemnt"
+      + subnet_id                = (known after apply)
+
+      + private_service_connection {
+          + is_manual_connection           = false
+          + name                           = "psc-pk-assemnt"
+          + private_connection_resource_id = (known after apply)
+          + private_ip_address             = (known after apply)
+          + subresource_names              = [
+              + "postgresqlServer",
+            ]
+        }
+    }
+
+  # module.win_vm.azurerm_network_interface.nic will be created
+  + resource "azurerm_network_interface" "nic" {
+      + applied_dns_servers           = (known after apply)
+      + dns_servers                   = (known after apply)
+      + enable_accelerated_networking = false
+      + enable_ip_forwarding          = false
+      + id                            = (known after apply)
+      + internal_dns_name_label       = (known after apply)
+      + internal_domain_name_suffix   = (known after apply)
+      + location                      = "westeurope"
+      + mac_address                   = (known after apply)
+      + name                          = "nic-pk-assemnt-vm"
+      + private_ip_address            = (known after apply)
+      + private_ip_addresses          = (known after apply)
+      + resource_group_name           = "rg-pk-assemnt"
+      + virtual_machine_id            = (known after apply)
+
+      + ip_configuration {
+          + gateway_load_balancer_frontend_ip_configuration_id = (known after apply)
+          + name                                               = "internal"
+          + primary                                            = (known after apply)
+          + private_ip_address                                 = (known after apply)
+          + private_ip_address_allocation                      = "Dynamic"
+          + private_ip_address_version                         = "IPv4"
+          + subnet_id                                          = (known after apply)
+        }
+    }
+
+  # module.win_vm.azurerm_windows_virtual_machine.this will be created
+  + resource "azurerm_windows_virtual_machine" "this" {
+      + admin_password             = (sensitive value)
+      + admin_username             = "adminuser"
+      + allow_extension_operations = true
+      + computer_name              = (known after apply)
+      + enable_automatic_updates   = true
+      + extensions_time_budget     = "PT1H30M"
+      + hotpatching_enabled        = false
+      + id                         = (known after apply)
+      + location                   = "westeurope"
+      + max_bid_price              = -1
+      + name                       = "vm-pk-assemnt"
+      + network_interface_ids      = (known after apply)
+      + patch_assessment_mode      = "ImageDefault"
+      + patch_mode                 = "AutomaticByOS"
+      + platform_fault_domain      = -1
+      + priority                   = "Regular"
+      + private_ip_address         = (known after apply)
+      + private_ip_addresses       = (known after apply)
+      + provision_vm_agent         = true
+      + public_ip_address          = (known after apply)
+      + public_ip_addresses        = (known after apply)
+      + resource_group_name        = "rg-pk-assemnt"
+      + size                       = "Standard_D2s_v3"
+      + virtual_machine_id         = (known after apply)
+
+      + os_disk {
+          + caching                   = "ReadWrite"
+          + disk_size_gb              = (known after apply)
+          + name                      = (known after apply)
+          + storage_account_type      = "StandardSSD_LRS"
+          + write_accelerator_enabled = false
+        }
+
+      + source_image_reference {
+          + offer     = "WindowsServer"
+          + publisher = "MicrosoftWindowsServer"
+          + sku       = "2016-Datacenter"
+          + version   = "latest"
+        }
+
+      + termination_notification {
+          + enabled = (known after apply)
+          + timeout = (known after apply)
+        }
+    }
+
+  # module.appgateway.module.naming.random_string.first_letter will be created
+  + resource "random_string" "first_letter" {
+      + id          = (known after apply)
+      + length      = 1
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = false
+      + numeric     = false
+      + result      = (known after apply)
+      + special     = false
+      + upper       = false
+    }
+
+  # module.appgateway.module.naming.random_string.main will be created
+  + resource "random_string" "main" {
+      + id          = (known after apply)
+      + length      = 60
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = true
+      + numeric     = true
+      + result      = (known after apply)
+      + special     = false
+      + upper       = false
+    }
+
+  # module.psql.module.naming.random_string.first_letter will be created
+  + resource "random_string" "first_letter" {
+      + id          = (known after apply)
+      + length      = 1
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = false
+      + numeric     = false
+      + result      = (known after apply)
+      + special     = false
+      + upper       = false
+    }
+
+  # module.psql.module.naming.random_string.main will be created
+  + resource "random_string" "main" {
+      + id          = (known after apply)
+      + length      = 60
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = true
+      + numeric     = true
+      + result      = (known after apply)
+      + special     = false
+      + upper       = false
+    }
+
+  # module.win_vm.module.naming.random_string.first_letter will be created
+  + resource "random_string" "first_letter" {
+      + id          = (known after apply)
+      + length      = 1
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = false
+      + numeric     = false
+      + result      = (known after apply)
+      + special     = false
+      + upper       = false
+    }
+
+  # module.win_vm.module.naming.random_string.main will be created
+  + resource "random_string" "main" {
+      + id          = (known after apply)
+      + length      = 60
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = true
+      + numeric     = true
+      + result      = (known after apply)
+      + special     = false
+      + upper       = false
+    }
+
+Plan: 24 to add, 0 to change, 0 to destroy.
+╷
+│ Warning: Experimental feature "module_variable_optional_attrs" is active
+│
+│   on ..\modules\agw\provider.tf line 2, in terraform:
+│    2:   experiments = [module_variable_optional_attrs]
+│
+│ Experimental features are subject to breaking changes in future minor or patch releases, based on feedback.
+│
+│ If you have feedback on the design of this feature, please open a GitHub issue to discuss it.
+╵
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+
+Saved the plan to: plan.out
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply "plan.out"
