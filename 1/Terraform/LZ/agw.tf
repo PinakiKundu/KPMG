@@ -20,6 +20,7 @@ module "appgateway" {
       "backend_address_pool_name"  = "pool-dev"
       "backend_http_settings_name" = "dev-http-settings"
       "name"                       = "dev-routing"
+      "rule_type"                  = "Basic"
     }
   ]
 

@@ -1,5 +1,5 @@
 resource "azurerm_postgresql_server" "psql" {
-  name                = module.naming.postgresql_server
+  name                = module.naming.postgresql_server.name
   location            = var.location
   resource_group_name = var.resource_group_name
 

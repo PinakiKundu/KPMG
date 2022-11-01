@@ -4,7 +4,7 @@ module "naming" {
 }
 
 resource "azurerm_public_ip" "ip" {
-  name                = module.naming.public_ip
+  name                = module.naming.public_ip.name
   location            = var.location
   allocation_method   = "Static"
   resource_group_name = var.resource_group_name

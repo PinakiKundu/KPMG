@@ -1,5 +1,5 @@
 resource "azurerm_network_interface" "nic" {
-  name                = "${module.naming.network_interface}-vm"
+  name                = "${module.naming.network_interface.name}-vm"
   location            = var.location
   resource_group_name = var.resource_group_name
 
@@ -11,7 +11,7 @@ resource "azurerm_network_interface" "nic" {
 }
 
 resource "azurerm_windows_virtual_machine" "this" {
-  name                = module.naming.windows_virtual_machine
+  name                = module.naming.windows_virtual_machine.name
   resource_group_name = var.resource_group_name
   location            = var.location
   size                = var.size

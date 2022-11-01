@@ -1,5 +1,5 @@
 resource "azurerm_application_gateway" "agw" {
-  name                = module.naming.application_gateway
+  name                = module.naming.application_gateway.name
   resource_group_name = var.resource_group_name
   location            = var.location
 
@@ -65,7 +65,7 @@ resource "azurerm_application_gateway" "agw" {
       http_listener_name         = "agw-http-listener"
       backend_address_pool_name  = lookup(rrt.value, "backend_address_pool_name", null)
       backend_http_settings_name = lookup(rrt.value, "backend_http_settings_name", null)
-      priority                   = 0
+      priority                   = 1
     }
   }
 

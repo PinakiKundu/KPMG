@@ -1,12 +1,12 @@
 resource "azurerm_resource_group" "hub" {
-  name     = "${module.naming.resource_group}-hub"
+  name     = "${module.naming.resource_group.name}-hub"
   location = local.location
 }
 
 # Network configuration ##
 #------------------------#
 resource "azurerm_virtual_network" "hub" {
-  name                = "${module.naming.virtual_network}-hub"
+  name                = "${module.naming.virtual_network.name}-hub"
   location            = local.location
   resource_group_name = azurerm_resource_group.hub.name
   address_space       = ["10.10.0.0/16"]
@@ -14,7 +14,7 @@ resource "azurerm_virtual_network" "hub" {
 
 # Subnet for AGW deployment #
 resource "azurerm_subnet" "gateway_subnet" {
-  name                 = module.naming.subnet
+  name                 = module.naming.subnet.name
   resource_group_name  = azurerm_virtual_network.hub.resource_group_name
   virtual_network_name = azurerm_virtual_network.hub.name
   address_prefixes     = ["10.10.1.0/24"]
@@ -25,7 +25,7 @@ resource "azurerm_subnet" "gateway_subnet" {
 # This port range is required for Azure infrastructure communication. These ports are protected (locked down) by Azure certificates.
 # External entities, including the customers of those gateways, can't communicate on these endpoints.
 resource "azurerm_network_security_group" "gateway_subnet_nsg" {
-  name                = module.naming.network_security_group
+  name                = module.naming.network_security_group.name
   location            = local.location
   resource_group_name = azurerm_resource_group.hub.name
 
