@@ -5,7 +5,7 @@ resource "azurerm_application_gateway" "agw" {
 
   sku {
     name     = "Standard_v2"
-    tier     = "Standard"
+    tier     = "Standard_v2"
     capacity = 2
   }
 
@@ -25,7 +25,7 @@ resource "azurerm_application_gateway" "agw" {
 
   # Public ip frontend configuration.
   frontend_ip_configuration {
-    name                 = "agw-fend-public-ip-config"
+    name                 = "agw-fend-ip-config"
     public_ip_address_id = azurerm_public_ip.ip.id
   }
 
