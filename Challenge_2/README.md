@@ -10,6 +10,8 @@ sudo apt-get install jq
 host_url="http://169.254.169.254/"
 query_param="api-version=2021-02-01&format=json"
 
+# Take endpoint as user input
+
 printf "Choose endpoint - \n 1: /metadata/attested \n 2: /metadata/identity \n 3: /metadata/instance \n 4: /metadata/loadbalancer  \n 5: /metadata/scheduledevents \n\nYour Choice:  " 
 read scase
 
@@ -39,9 +41,8 @@ endpoint="/metadata/versions"
 ;;
 esac
 
+# Build calling URL
 calling_url=$host_url$endpoint"?"$query_param
-
-printf $calling_url
 
 # Instance call
 curl -H Metadata:True --noproxy "*" $calling_url | jq .
